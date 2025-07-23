@@ -117,11 +117,19 @@ class AIProviderManager:
                 return response.generations[0].text
             
             elif provider_type == 'mistral':
-                response = client.chat.complete(
+                # Updated to use client.chat instead of client.chat.complete
+                response = client.chat(
                     model=model,
-                    messages=[{"role": "user", "content": prompt}]
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.7,
+                    max_tokens=calculate_word_count(form_data['duration']) * 1.5
                 )
-                return response.choices[0].message.content
+                # Ensure response handling matches Mistral API output
+                if response and response.choices:
+                    return response.choices[0].message.content
+                else:
+                    st.error("No valid response from Mistral API")
+                    return None
             
             return None
         except Exception as e:

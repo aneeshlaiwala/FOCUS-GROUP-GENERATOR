@@ -44,5 +44,3 @@ validators>=0.22.0
 
 # Security
 cryptography>=41.0.8
-
-# Removed: tempfile (part of Python standard library)

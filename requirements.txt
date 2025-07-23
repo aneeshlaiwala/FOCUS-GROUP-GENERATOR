@@ -1,35 +1,48 @@
 # Core Streamlit and UI
 streamlit>=1.30.0
 streamlit-option-menu>=0.3.6
+streamlit-extras>=0.3.5
+streamlit-agraph>=0.0.45
+
 # AI Provider SDKs
 openai>=1.12.0
 anthropic>=0.18.0
 google-generativeai>=0.3.2
 cohere>=4.47
 mistralai>=0.1.6
+
 # Document Processing
 python-docx>=1.1.0
 PyPDF2>=3.0.1
 mammoth>=1.6.0
 pypandoc>=1.12
+
 # Data Processing
 pandas>=2.1.4
 numpy>=1.24.3
 openpyxl>=3.1.2
+
 # HTTP Requests and APIs
 requests>=2.31.0
 httpx>=0.25.0
+
 # Text Processing and NLP
 nltk>=3.8.1
+spacy>=3.7.2
 langdetect>=1.0.9
 textstat>=0.7.3
+
 # Web Search (for research)
 beautifulsoup4>=4.12.2
+
 # Export and Download
 xlsxwriter>=3.1.9
+
 # Utilities
 python-dotenv>=1.0.0
 validators>=0.22.0
 
 # Security
 cryptography>=41.0.8
+
+# Removed: tempfile (part of Python standard library)

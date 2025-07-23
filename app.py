@@ -602,7 +602,8 @@ def main():
         st.markdown("### Navigation")
         
         # Progress indicator
-        steps = ['Form', 'Prompt', 'Generate', 'Result']
+        steps = ['Form', 'Prompt', 'Generating', 'Result']  # Fixed 'Generate' to 'Generating'
+        
         current_step_index = steps.index(st.session_state.step.title())
         
         for i, step in enumerate(steps):

@@ -491,9 +491,13 @@ PARTICIPANTS:
 ---
 
 [00:00] MODERATOR: Good {'morning' if form_data['discussion_type'] == 'online' else 'evening'} everyone, thank you for {'joining our virtual session' if form_data['discussion_type'] == 'online' else 'coming to our facility today'}. I'm Sarah, and I'll be moderating today's discussion about {form_data['topic']}. Before we begin, I want to assure you that everything discussed here will remain confidential and will only be used for research purposes.
+"""
+        if form_data['discussion_type'] == 'online':
+            transcript += f"[00:02] MODERATOR: Since we're meeting online, please make sure your audio is clear and feel free to use the chat if needed. This session will last approximately {form_data['duration']} minutes, and we'll be recording for analysis purposes. Is everyone okay with that?\n"
+        else:
+            transcript += f"[00:02] MODERATOR: I see everyone has their name cards and refreshments. Please make yourselves comfortable. This session will last approximately {form_data['duration']} minutes, and we'll be recording for analysis purposes. Is everyone okay with that?\n"
 
-[00:02] MODERATOR: {'Since we're meeting online, please make sure your audio is clear and feel free to use the chat if needed.' if form_data['discussion_type'] == 'online' else 'I see everyone has their name cards and refreshments. Please make yourselves comfortable.'} This session will last approximately {form_data['duration']} minutes, and we'll be recording for analysis purposes. Is everyone okay with that?
-
+        transcript += f"""
 [Various participants nod and say "Yes"]
 
 [00:03] MODERATOR: Excellent. Let's start with quick introductions. Amit, would you like to begin?

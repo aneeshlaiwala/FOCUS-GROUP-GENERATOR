@@ -1,0 +1,29 @@
+{
+  "languages": {
+    "English": {
+      "patterns": ["um", "uh", "you know", "like"],
+      "dialects": {
+        "India": ["good name", "I am having"],
+        "UK": ["brilliant", "quite"],
+        "USA": ["totally", "awesome"]
+      }
+    },
+    "Hinglish": {
+      "patterns": ["na", "yaar", "arre", "bas"],
+      "dialects": {
+        "India": ["time pass", "tension mat lo"]
+      }
+    },
+    "French": {
+      "patterns": ["euh", "ben", "alors"],
+      "dialects": {
+        "France": ["vous", "tu"],
+        "Canada": ["eh", "tabarnak"]
+      }
+    }
+  },
+  "cultural_contexts": {
+    "Mumbai": "Fast-paced urban lifestyle, local trains, monsoons",
+    "Paris": "Fashion-conscious, café culture, metro"
+  }
+}

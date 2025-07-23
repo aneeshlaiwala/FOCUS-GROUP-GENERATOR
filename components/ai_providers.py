@@ -10,6 +10,7 @@ import cohere
 from mistralai.client import MistralClient
 import time
 import json
+from components.utils import calculate_word_count  # Explicit import to ensure availability
 
 class AIProviderManager:
     """Manages all AI provider integrations and handles transcript generation"""
@@ -85,11 +86,13 @@ class AIProviderManager:
         provider_type = provider['type']
         
         try:
+            max_tokens = calculate_word_count(form_data['duration']) * 1.5  # Approx tokens
+            
             if provider_type == 'openai':
                 response = client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,  # Approx tokens
+                    max_tokens=max_tokens,
                     temperature=0.7
                 )
                 return response.choices[0].message.content
@@ -97,7 +100,7 @@ class AIProviderManager:
             elif provider_type == 'anthropic':
                 response = client.messages.create(
                     model=model,
-                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,
+                    max_tokens=max_tokens,
                     temperature=0.7,
                     messages=[{"role": "user", "content": prompt}]
                 )
@@ -105,33 +108,44 @@ class AIProviderManager:
             
             elif provider_type == 'google':
                 response = client.generate_content(prompt)
-                return response.text
+                return response.text if hasattr(response, 'text') else str(response)
             
             elif provider_type == 'cohere':
                 response = client.generate(
                     model=model,
                     prompt=prompt,
-                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,
+                    max_tokens=max_tokens,
                     temperature=0.7
                 )
                 return response.generations[0].text
             
             elif provider_type == 'mistral':
-                # Updated to use client.chat instead of client.chat.complete
+                # Refined Mistral API call based on version 1.9.2
                 response = client.chat(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    temperature=0.7,
-                    max_tokens=calculate_word_count(form_data['duration']) * 1.5
+                    temperature=0.7
                 )
-                # Ensure response handling matches Mistral API output
-                if response and response.choices:
+                st.write(f"Debug: Mistral response structure: {response}")  # Log response for debugging
+                if response and hasattr(response, 'choices') and response.choices:
                     return response.choices[0].message.content
                 else:
-                    st.error("No valid response from Mistral API")
-                    return None
+                    st.error(f"Mistral API response invalid or empty: {str(response)}")
+                    return self._simulate_transcript(prompt, form_data)
             
             return None
         except Exception as e:
             st.error(f"Error generating transcript with {provider_name}: {str(e)}")
+            if provider_type == 'mistral':  # Fallback for Mistral
+                return self._simulate_transcript(prompt, form_data)
             return None
+    
+    def _simulate_transcript(self, prompt, form_data):
+        """Fallback to simulate a transcript if API call fails"""
+        st.warning("API call failed. Generating simulated transcript as fallback.")
+        duration = form_data['duration']
+        estimated_words = calculate_word_count(duration)
+        return f"""[00:00] MODERATOR: Welcome to the focus group on {form_data['topic']}. This is a simulated transcript due to API failure.
+[00:05] PARTICIPANT 1: This is a placeholder response with about {estimated_words // 10} words.
+[00:10] PARTICIPANT 2: Another response here, adding more context.
+... (Transcript continues for {duration} minutes with ~{estimated_words} words total)"""

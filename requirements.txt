@@ -1,36 +1,36 @@
 # Core Streamlit and UI
-streamlit>=1.30.0
+streamlit>=1.47.0  # Updated to latest compatible version as of July 2025
 streamlit-option-menu>=0.3.6
-streamlit-extras>=0.3.5
+streamlit-extras>=0.7.5  # Matches log version
 streamlit-agraph>=0.0.45
 
 # AI Provider SDKs
-openai>=1.12.0
-anthropic>=0.18.0
-google-generativeai>=0.3.2
-cohere>=4.47
-mistralai>=0.1.6
+openai>=1.97.1  # Matches log version
+anthropic>=0.58.2  # Matches log version
+google-generativeai>=0.8.5  # Matches log version
+cohere>=5.16.1  # Matches log version
+mistralai>=1.9.2  # Pin to exact version to ensure compatibility
 
 # Document Processing
-python-docx>=1.1.0
+python-docx>=1.2.0  # Matches log version
 PyPDF2>=3.0.1
-mammoth>=1.6.0
-pypandoc>=1.12
+mammoth>=1.9.1  # Matches log version
+pypandoc>=1.15  # Matches log version
 
 # Data Processing
-pandas>=2.1.4
-numpy>=1.24.3
-openpyxl>=3.1.2
+pandas>=2.3.1  # Matches log version, compatible with Python 3.13
+numpy>=2.3.1  # Matches log version, compatible with Python 3.13
+openpyxl>=3.1.5  # Matches log version
 
 # HTTP Requests and APIs
-requests>=2.31.0
-httpx>=0.25.0
+requests>=2.32.4  # Matches log version
+httpx>=0.28.1  # Matches log version
 
 # Text Processing and NLP
-nltk>=3.8.1
-spacy>=3.7.2
+nltk>=3.9.1  # Matches log version
+spacy>=3.8.7  # Matches log version
 langdetect>=1.0.9
-textstat>=0.7.3
+textstat>=0.7.8  # Matches log version
 
 # Web Search (for research)
 beautifulsoup4>=4.12.2

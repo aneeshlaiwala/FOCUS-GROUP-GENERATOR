@@ -5,11 +5,11 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
+from components.transcript_generator import TranscriptGenerator
 
-# Import custom components (you'll create these)
+# Import custom components
 try:
     from components.ai_providers import AIProviderManager
-    from components.transcript_generator import TranscriptGenerator
     from components.utils import (
         calculate_word_count, 
         validate_api_key, 
@@ -439,6 +439,10 @@ def render_generating_page():
     
     # Simulate generation process
     if not st.session_state.generated_transcript:
+        generator = TranscriptGenerator()
+        form_data = st.session_state.form_data
+        api_config = st.session_state.api_config
+        generated_prompt = st.session_state.generated_prompt
         
         # Stage 1: Research
         status_text.text("🔍 Researching topic and market conditions...")
@@ -458,89 +462,18 @@ def render_generating_page():
         # Stage 4: Transcript Generation
         status_text.text("💬 Generating natural conversation flow...")
         progress_bar.progress(80)
-        time.sleep(3)
+        with st.spinner("Generating transcript with AI..."):
+            try:
+                st.session_state.generated_transcript = generator.generate_full_transcript(form_data, api_config, generated_prompt)
+            except Exception as e:
+                st.error(f"Error generating transcript: {str(e)}")
+                st.session_state.generated_transcript = "Failed to generate transcript due to an error."
         
         # Stage 5: Final Processing
         status_text.text("✨ Finalizing transcript and applying language patterns...")
         progress_bar.progress(100)
         time.sleep(1)
         
-        # Generate actual transcript (this would call the AI provider)
-        form_data = st.session_state.form_data
-        estimated_words = calculate_word_count(form_data['duration'])
-        
-        # Sample transcript generation
-        transcript = f"""FOCUS GROUP DISCUSSION TRANSCRIPT
-Topic: {form_data['topic']}
-Date: {datetime.now().strftime('%B %d, %Y')}
-Duration: {form_data['duration']} minutes
-Location: {form_data['location']}
-Type: {form_data['discussion_type'].upper()}
-
-PARTICIPANTS:
-- Moderator: Sarah Chen (Research Facilitator)
-- P1: Amit Sharma (M, 32, Software Engineer)
-- P2: Priya Patel (F, 29, Marketing Manager)
-- P3: Rajesh Kumar (M, 45, Small Business Owner)
-- P4: Sneha Singh (F, 26, Graduate Student)
-- P5: David Thompson (M, 38, Consultant)
-- P6: Maria Rodriguez (F, 31, Teacher)
-- P7: Chen Wei (M, 27, Designer)
-- P8: Aisha Khan (F, 35, Healthcare Worker)
-
----
-
-[00:00] MODERATOR: Good {'morning' if form_data['discussion_type'] == 'online' else 'evening'} everyone, thank you for {'joining our virtual session' if form_data['discussion_type'] == 'online' else 'coming to our facility today'}. I'm Sarah, and I'll be moderating today's discussion about {form_data['topic']}. Before we begin, I want to assure you that everything discussed here will remain confidential and will only be used for research purposes.
-"""
-        if form_data['discussion_type'] == 'online':
-            transcript += f"[00:02] MODERATOR: Since we're meeting online, please make sure your audio is clear and feel free to use the chat if needed. This session will last approximately {form_data['duration']} minutes, and we'll be recording for analysis purposes. Is everyone okay with that?\n"
-        else:
-            transcript += f"[00:02] MODERATOR: I see everyone has their name cards and refreshments. Please make yourselves comfortable. This session will last approximately {form_data['duration']} minutes, and we'll be recording for analysis purposes. Is everyone okay with that?\n"
-
-        transcript += f"""
-[Various participants nod and say "Yes"]
-
-[00:03] MODERATOR: Excellent. Let's start with quick introductions. Amit, would you like to begin?
-
-[00:04] P1 (AMIT): Hi everyone, I'm Amit Sharma. I work in software development here in {form_data['location']}. I've been, umm, quite interested in this topic actually, especially how it affects our daily lives.
-
-[00:05] P2 (PRIYA): Hello! I'm Priya Patel, I work in marketing. This is quite relevant to my work, so I'm excited to share my thoughts. I've been following some trends in this space.
-
-[00:06] P3 (RAJESH): Rajesh Kumar here. I run a small business, so I look at things from a different angle, you know? Cost, practicality, that sort of thing.
-
-[00:07] P4 (SNEHA): Hi, I'm Sneha Singh. I'm finishing my master's degree, so I bring the younger perspective, I guess. *laughs* I've done quite a bit of research on this for my thesis actually.
-
-[00:08] P5 (DAVID): David Thompson. I'm a consultant, so I work with various companies on strategy. This topic comes up a lot in my client discussions.
-
-[00:09] P6 (MARIA): Maria Rodriguez, I'm a high school teacher. I see how these issues affect families and students, so that's my angle.
-
-[00:10] P7 (CHEN): Chen Wei, I'm a UX designer. I think about user experience and how people actually interact with these... solutions, I suppose.
-
-[00:11] P8 (AISHA): And I'm Aisha Khan, I work in healthcare. I'm interested in the health and safety aspects of what we're discussing today.
-
-[00:12] MODERATOR: Thank you all for those introductions. Now, let's dive into our main topic. To start with something broad - when you first hear about "{form_data['topic']}", what comes to mind? Sneha, let's start with you.
-
-[The transcript would continue with natural conversation flow, cultural references specific to {form_data['location']}, and realistic group dynamics for the full {form_data['duration']} minutes, totaling approximately {estimated_words:,} words]
-
----
-
-TRANSCRIPT STATISTICS:
-- Total Duration: {form_data['duration']} minutes
-- Word Count: ~{estimated_words:,} words
-- Participants: {form_data['num_participants']} people
-- Languages: {', '.join(form_data['languages'])}
-- Cultural References: {form_data['location']}-specific
-- Natural Speech Patterns: Included throughout
-
-MODERATOR NOTES:
-- All participants actively engaged
-- Good diversity of opinions observed
-- Cultural context well-represented for {form_data['location']}
-- Natural speech patterns and local references maintained throughout
-- Realistic group dynamics with appropriate interruptions and agreements
-"""
-        
-        st.session_state.generated_transcript = transcript
         status_text.text("✅ Transcript generation complete!")
     
     # Automatically move to results
@@ -561,7 +494,7 @@ def render_result_page():
     with col1:
         if st.download_button(
             label="📥 Download TXT",
-            data=st.session_state.generated_transcript,
+            data=export_to_txt(st.session_state.generated_transcript, form_data),
             file_name=f"focus_group_{form_data['topic'].replace(' ', '_')}.txt",
             mime="text/plain",
             use_container_width=True
@@ -569,7 +502,7 @@ def render_result_page():
             st.success("TXT file downloaded!")
     
     with col2:
-        # Convert to DOCX format (simplified)
+        # Convert to DOCX format
         docx_data = export_to_docx(st.session_state.generated_transcript, form_data)
         if st.download_button(
             label="📥 Download DOCX",

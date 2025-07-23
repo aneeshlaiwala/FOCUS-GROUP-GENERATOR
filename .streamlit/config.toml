@@ -1,0 +1,50 @@
+[global]
+# Development mode
+developmentMode = false
+
+# Data directory
+dataDir = ".streamlit"
+
+[server]
+# Port configuration (Streamlit Cloud will override this)
+port = 8501
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 200
+maxMessageSize = 200
+enableWebsocketCompression = false
+
+[browser]
+# Auto-open browser (disabled for cloud deployment)
+gatherUsageStats = false
+serverAddress = "0.0.0.0"
+
+[theme]
+# App theme configuration
+primaryColor = "#3b82f6"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8fafc"
+textColor = "#1f2937"
+font = "sans serif"
+
+[runner]
+# Performance settings
+magicEnabled = true
+installTracer = false
+fixMatplotlib = true
+postScriptGC = true
+fastReruns = true
+
+[client]
+# Client configuration
+caching = true
+displayEnabled = true
+showErrorDetails = true
+
+[mapbox]
+# Mapbox token (if needed for location visualizations)
+token = ""
+
+[deprecation]
+# Deprecation warnings
+showPyplotGlobalUse = false

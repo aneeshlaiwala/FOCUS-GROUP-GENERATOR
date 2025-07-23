@@ -47,4 +47,84 @@ class AIProviderManager:
             elif provider_name == 'google':
                 genai.configure(api_key=api_key)
                 model_obj = genai.GenerativeModel(model)
-                self.providers
+                self.providers[provider_name] = {
+                    'client': model_obj,
+                    'model': model,
+                    'type': 'google'
+                }
+                
+            elif provider_name == 'cohere':
+                client = cohere.Client(api_key=api_key)
+                self.providers[provider_name] = {
+                    'client': client,
+                    'model': model,
+                    'type': 'cohere'
+                }
+                
+            elif provider_name == 'mistral':
+                client = MistralClient(api_key=api_key)
+                self.providers[provider_name] = {
+                    'client': client,
+                    'model': model,
+                    'type': 'mistral'
+                }
+                
+            return True
+        except Exception as e:
+            st.error(f"Error initializing {provider_name}: {str(e)}")
+            return False
+    
+    def generate_transcript(self, provider_name, prompt, form_data):
+        """Generate transcript using the selected AI provider"""
+        if provider_name not in self.providers:
+            st.error(f"Provider {provider_name} not initialized")
+            return None
+        
+        provider = self.providers[provider_name]
+        client = provider['client']
+        model = provider['model']
+        provider_type = provider['type']
+        
+        try:
+            if provider_type == 'openai':
+                response = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,  # Approx tokens
+                    temperature=0.7
+                )
+                return response.choices[0].message.content
+            
+            elif provider_type == 'anthropic':
+                response = client.messages.create(
+                    model=model,
+                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,
+                    temperature=0.7,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                return response.content[0].text
+            
+            elif provider_type == 'google':
+                response = client.generate_content(prompt)
+                return response.text
+            
+            elif provider_type == 'cohere':
+                response = client.generate(
+                    model=model,
+                    prompt=prompt,
+                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,
+                    temperature=0.7
+                )
+                return response.generations[0].text
+            
+            elif provider_type == 'mistral':
+                response = client.chat(
+                    model=model,
+                    messages=[ChatMessage(role="user", content=prompt)]
+                )
+                return response.choices[0].message.content
+            
+            return None
+        except Exception as e:
+            st.error(f"Error generating transcript with {provider_name}: {str(e)}")
+            return None

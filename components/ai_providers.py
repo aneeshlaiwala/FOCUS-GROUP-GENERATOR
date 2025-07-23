@@ -8,7 +8,7 @@ import anthropic
 import google.generativeai as genai
 import cohere
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models import ChatMessage  # Updated import
 import time
 import json
 
@@ -90,7 +90,7 @@ class AIProviderManager:
                 response = client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
-                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,  # Approx tokens
+                    max_tokens=calculate_word_count(form_data['duration']) * 1.5,
                     temperature=0.7
                 )
                 return response.choices[0].message.content

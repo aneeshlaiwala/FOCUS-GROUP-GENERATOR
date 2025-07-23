@@ -1,32 +1,16 @@
-# System packages required for Streamlit Cloud deployment
-# These will be installed via apt-get
-
-# For PDF processing
 poppler-utils
 libpoppler-cpp-dev
-
-# For document processing
 pandoc
 texlive-latex-base
 texlive-fonts-recommended
 texlive-fonts-extra
 texlive-latex-extra
-
-# For web scraping and HTTP requests
 curl
 wget
 ca-certificates
-
-# For image processing (if needed)
 libgl1-mesa-glx
 libglib2.0-0
-
-# For language processing
 libicu-dev
-
-# For cryptography
 libffi-dev
 libssl-dev
-
-# For better performance
 build-essential
